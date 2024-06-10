@@ -119,15 +119,19 @@ class BlackJack():
 
     def game(self,):
         self.round += 1
-        print(f"\033[1;30HRound: {self.round}")
+        usefulThings.printLbyL(f"\033[1;30HRound: {self.round}", interval=0.05)
         sleep(0.3)
-        print("\033[3;2HDealer's hand")
-        print("-" * 40 + "\n" * 5 + "-" * 40 + "\n")
+        usefulThings.printLbyL("\033[3;2HDealer's hand", interval=0.05)
         sleep(0.1)
-        print(f"{name}'s hand")
-        print("-" * 40 + "\n" * 5 + "-" * 40)
-        sleep(0.5)
+        usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40 + "\n", interval=0.01)
+        sleep(0.3)
+        usefulThings.printLbyL(f"{name}'s hand", interval=0.05)
+        sleep(0.1)
+        usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40, interval=0.01)
+        sleep(0.3)
         while True:
+            self.dealer_cards.clear()
+            self.player_cards.clear()
             print("\033[5;4H", end="")
             for i in range(2):
                 sym, num = self.dealer_draw()
@@ -138,6 +142,9 @@ class BlackJack():
             for i in range(2):
                 sym, num = self.player_draw()
                 cardPrint(sym, num)
+            print("\033[24;1H", end="")
+            print(self.dealer_cards)
+            print(self.player_cards)
             input()
 
             
