@@ -1,9 +1,10 @@
 #coding: utf-8
 from time import sleep
 import usefulThings
+from random import randint
 
 reset = "\033[2J\033[0;0H"
-symbols = {"spade": "♠", "heart": "\033[31m♥\033[0m", "d": "\033[31m♦\033[0m", "club": "♣"}
+symbols = ["♠", "\033[31m♥\033[0m", "\033[31m♦\033[0m", "♣"]
 numbers = [" A", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K"]
 title_logo = ["""
 ---------------------------------------
@@ -43,8 +44,8 @@ title_logo = ["""
 -------------------------\
 """]
 
-def cardPrint(num: int, sym: str=None):
-    if num == -1:
+def cardPrint(sym: int, num: int=0):
+    if sym == -1:
         print(f"""\
 ┌───┐\033[1B\033[5D\
 │XXX│\033[1B\033[5D\
@@ -53,6 +54,8 @@ def cardPrint(num: int, sym: str=None):
         end="")
     
     else:
+        num = numbers[num]
+        sym = symbols[sym]
         print(f"""\
 ┌───┐\033[1B\033[5D\
 │{num} │\033[1B\033[5D\
@@ -83,22 +86,36 @@ class Poker():
 
 class BlackJack():
     def __init__(self,):
-        self.deck = [ [0] * 13 for i in range(4) ]
+        self.deck = [ (i, j) for i in range(4) for j in range(13) ]
         self.dealer_cards: list[tuple[int, int]] = []
         self.player_cards: list[tuple[int, int]] = []
         self.money = 500
         self.round = 0
         self.start()
 
+    def drawCard(self):
+        sym, num = self.deck.pop(randint(0, len(self.deck)-1))
+        return sym, num
+
     def updateMoney(self, amount):
         self.money += amount
-        print(f"\033[1;1HMoney: {self.money}")
+        print(f"\033[1;1HMoney: ${self.money}")
 
     def start(self,):
         print(reset)
         self.updateMoney(0)
         sleep(0.3)
         self.game()
+
+    def dealer_draw(self):
+        sym, num = self.drawCard()
+        self.dealer_cards.append((sym, num))
+        return sym,num
+    
+    def player_draw(self):
+        sym, num = self.drawCard()
+        self.player_cards.append((sym, num))
+        return sym, num
 
     def game(self,):
         self.round += 1
@@ -112,12 +129,19 @@ class BlackJack():
         sleep(0.5)
         while True:
             print("\033[5;4H", end="")
+            for i in range(2):
+                sym, num = self.dealer_draw()
+                if i == 0: cardPrint(sym, num)
             cardPrint(-1)
-            cardPrint(-1)
-            
-        
+            print("\033[13;4H", end="", flush=True)
+            sleep(0.5)
+            for i in range(2):
+                sym, num = self.player_draw()
+                cardPrint(sym, num)
+            input()
 
-        
+            
+
 
 ##################################################
 
