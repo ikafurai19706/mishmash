@@ -1,7 +1,9 @@
 #coding: utf-8
 from time import sleep
-import usefulThings
 from random import randint
+from msvcrt import getch
+
+import usefulThings
 
 reset = "\033[2J\033[0;0H"
 symbols = ["♠", "\033[31m♥\033[0m", "\033[31m♦\033[0m", "♣"]
@@ -95,6 +97,7 @@ class BlackJack():
 
     def drawCard(self):
         sym, num = self.deck.pop(randint(0, len(self.deck)-1))
+        print(f"\033[2;31HDeck: {len(self.deck)}")
         return sym, num
 
     def updateMoney(self, amount):
@@ -107,19 +110,35 @@ class BlackJack():
         sleep(0.3)
         self.game()
 
-    def dealer_draw(self):
+    def dealerDraw(self):
         sym, num = self.drawCard()
         self.dealer_cards.append((sym, num))
         return sym,num
     
-    def player_draw(self):
+    def playerDraw(self):
         sym, num = self.drawCard()
         self.player_cards.append((sym, num))
         return sym, num
+    
+    def cardSum(self, hand):
+        sum = 0
+        exist_ace = False
+        for sym, num in hand:
+            if num == 0 and not exist_ace:
+                sum += 11
+            elif num > 9:
+                sum += 10
+            else:
+                sum += num + 1
+        if exist_ace and sum > 21:
+            sum -= 10
+        return sum
 
     def game(self,):
         self.round += 1
-        usefulThings.printLbyL(f"\033[1;30HRound: {self.round}", interval=0.05)
+        print(f"\033[1;30HRound: {self.round}")
+        sleep(0.1)
+        print(f"\033[2;31HDeck: {len(self.deck)}")
         sleep(0.3)
         usefulThings.printLbyL("\033[3;2HDealer's hand", interval=0.05)
         sleep(0.1)
@@ -132,22 +151,36 @@ class BlackJack():
         while True:
             self.dealer_cards.clear()
             self.player_cards.clear()
-            print("\033[5;4H", end="")
+            de_sum = 0
+            pl_sum = 0
             for i in range(2):
-                sym, num = self.dealer_draw()
+                sym, num = self.dealerDraw()
+                print(f"\033[5;{4+5*i}H", end="", flush=True)
                 if i == 0: cardPrint(sym, num)
             cardPrint(-1)
-            print("\033[13;4H", end="", flush=True)
-            sleep(0.5)
+            print(f"\033[3;2HDealer's hand: {self.dealer_cards[0][1]}", end="", flush=True)
+            sleep(0.3)
             for i in range(2):
-                sym, num = self.player_draw()
+                sym, num = self.playerDraw()
+                print(f"\033[13;{4+5*i}H", end="", flush=True)
                 cardPrint(sym, num)
+            #print(f"\033[3;2H{name}'s hand: "+ pl_sum, end="", flush=True)
             print("\033[24;1H", end="")
             print(self.dealer_cards)
             print(self.player_cards)
-            input()
+            button = ["\033[7m", "", ""]
+            while True:
+                print(f"\033[19;2H{button[0]}Hit\033[0m    {button[1]}Stand\033[0m    {button[2]}Double\033[0m  ", end="", flush=True)
+                key = ord(getch())
+                if key == 13:
+                    break
+                if key == 224:
+                    key = ord(getch())
+                    if key == 77:
+                        button[0], button[1], button[2] = button[2], button[0], button[1]
+                    elif key == 75:
+                        button[0], button[1], button[2] = button[1], button[2], button[0]
 
-            
 
 
 ##################################################
