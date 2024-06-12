@@ -123,9 +123,10 @@ class BlackJack():
     def cardSum(self, hand):
         sum = 0
         exist_ace = False
-        for sym, num in hand:
+        for _, num in hand:
             if num == 0 and not exist_ace:
                 sum += 11
+                exist_ace = True
             elif num > 9:
                 sum += 10
             else:
@@ -144,11 +145,13 @@ class BlackJack():
         sleep(0.1)
         usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40 + "\n", interval=0.01)
         sleep(0.3)
-        usefulThings.printLbyL(f"{name}'s hand", interval=0.05)
+        usefulThings.printLbyL(f" {name}'s hand", interval=0.05)
         sleep(0.1)
         usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40, interval=0.01)
         sleep(0.3)
         while True:
+            self.round += 1
+            print(f"\033[1;30HRound: {self.round}")
             self.dealer_cards.clear()
             self.player_cards.clear()
             de_sum = 0
@@ -158,28 +161,48 @@ class BlackJack():
                 print(f"\033[5;{4+5*i}H", end="", flush=True)
                 if i == 0: cardPrint(sym, num)
             cardPrint(-1)
-            print(f"\033[3;2HDealer's hand: {self.dealer_cards[0][1]}", end="", flush=True)
+            de_sum = self.cardSum(self.dealer_cards)
+            print(f"\033[3;2HDealer's hand: {self.dealer_cards[0][1] + 1 if self.dealer_cards[0][1] != 0 else 11} ", end="", flush=True)
             sleep(0.3)
             for i in range(2):
                 sym, num = self.playerDraw()
                 print(f"\033[13;{4+5*i}H", end="", flush=True)
                 cardPrint(sym, num)
-            #print(f"\033[3;2H{name}'s hand: "+ pl_sum, end="", flush=True)
+            pl_sum = self.cardSum(self.player_cards)
+            print("\033[11;2H{}'s hand: {}{} \033[0m".format(
+                name,
+                ("\033[32m" if pl_sum == 21 else ""),
+                ("Natural BlackJack" if pl_sum == 21 else pl_sum)
+            ) + " " * 15, end="", flush=True)
             print("\033[24;1H", end="")
             print(self.dealer_cards)
             print(self.player_cards)
-            button = ["\033[7m", "", ""]
+            button = [">", " ", " "]
             while True:
-                print(f"\033[19;2H{button[0]}Hit\033[0m    {button[1]}Stand\033[0m    {button[2]}Double\033[0m  ", end="", flush=True)
+                print(f"\033[19;2H{button[0]} Hit    {button[1]} Stand    {button[2]} Double\n", flush=True)
                 key = ord(getch())
                 if key == 13:
-                    break
-                if key == 224:
+                    if button[0] != " ":
+                        sym, num = self.playerDraw()
+                        print(f"\033[13;{4+5*(len(self.player_cards)-1)}H", end="", flush=True)
+                        cardPrint(sym, num)
+                        print(f"\033[25;1H{self.player_cards}")
+                        pl_sum = self.cardSum(self.player_cards)
+                        print("\033[11;2H{}'s hand: {}{} {}\033[0m".format(
+                            name,
+                            ("\033[31m" if pl_sum > 21 else "\033[32m" if pl_sum == 21 else ""),
+                            pl_sum,
+                            ("Bust" if pl_sum > 21 else "BlackJack" if pl_sum == 21 else "")
+                        ) + " " * 15, end="", flush=True)
+                    else:
+                        break
+                elif key == 224:
                     key = ord(getch())
-                    if key == 77:
+                    if key == 77 and button[2] == " ":
                         button[0], button[1], button[2] = button[2], button[0], button[1]
-                    elif key == 75:
+                    elif key == 75 and button[0] == " ":
                         button[0], button[1], button[2] = button[1], button[2], button[0]
+
 
 
 
