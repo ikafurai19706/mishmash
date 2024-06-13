@@ -138,7 +138,7 @@ class BlackJack():
     def game(self,):
         self.round += 1
         print(f"\033[1;30HRound: {self.round}")
-        sleep(0.1)
+        sleep(0.3)
         print(f"\033[2;31HDeck: {len(self.deck)}")
         sleep(0.3)
         usefulThings.printLbyL("\033[3;2HDealer's hand", interval=0.05)
@@ -150,8 +150,6 @@ class BlackJack():
         usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40, interval=0.01)
         sleep(0.3)
         while True:
-            self.round += 1
-            print(f"\033[1;30HRound: {self.round}")
             self.dealer_cards.clear()
             self.player_cards.clear()
             de_sum = 0
@@ -162,8 +160,8 @@ class BlackJack():
                 if i == 0: cardPrint(sym, num)
             cardPrint(-1)
             de_sum = self.cardSum(self.dealer_cards)
-            print(f"\033[3;2HDealer's hand: {self.dealer_cards[0][1] + 1 if self.dealer_cards[0][1] != 0 else 11} ", end="", flush=True)
-            sleep(0.3)
+            print(f"\033[3;2HDealer's hand: {self.dealer_cards[0][1] + 1 if self.dealer_cards[0][1] != 0 else 11}" + " " * 15, end="", flush=True)
+            sleep(0.2)
             for i in range(2):
                 sym, num = self.playerDraw()
                 print(f"\033[13;{4+5*i}H", end="", flush=True)
@@ -178,7 +176,7 @@ class BlackJack():
             print(self.dealer_cards)
             print(self.player_cards)
             button = ["\033[33m>\033[1m", " ", " "]
-            while True:
+            while pl_sum < 21:
                 print(f"\033[19;2H{button[0]} Hit\033[0m    {button[1]} Stand\033[0m    {button[2]} Double\033[0m\n", flush=True)
                 key = ord(getch())
                 if key == 13:
@@ -194,10 +192,7 @@ class BlackJack():
                             pl_sum,
                             ("Bust" if pl_sum > 21 else "BlackJack" if pl_sum == 21 else "")
                         ) + " " * 15, end="", flush=True)
-                        if pl_sum >= 21:
-                            sleep(1)
-                            break
-                        elif button[2] != " ":
+                        if button[2] != " ":
                             break
                     else:
                         break
@@ -208,24 +203,38 @@ class BlackJack():
                     elif key == 75 and button[0] == " ":
                         button[0], button[1], button[2] = button[1], button[2], button[0]
                     continue
-            print(f"\033[5;9H", end="", flush=True)
-            cardPrint(self.dealer_cards[1][0], self.dealer_cards[1][1])
             if pl_sum < 21:
-                if de_sum < 17:
+                print(f"\033[5;9H", end="", flush=True)
+                cardPrint(self.dealer_cards[1][0], self.dealer_cards[1][1])
+                print("\033[3;2HDealer's hand: {}{} \033[0m".format(
+                    ("\033[32m" if de_sum == 21 else ""),
+                    ("Natural BlackJack" if de_sum == 21 else de_sum)
+                ) + " " * 15, end="", flush=True)
+                while de_sum < 17:
                     sleep(0.5)
                     sym, num = self.dealerDraw()
-                    print(f"\033[5;{4+5*(len(self.player_cards))}H", end="", flush=True)
+                    print(f"\033[5;{4+5*(len(self.dealer_cards)-1)}H", end="", flush=True)
                     cardPrint(sym, num)
                     de_sum = self.cardSum(self.dealer_cards)
                     print("\033[3;2HDealer's hand: {}{} {}\033[0m".format(
-                        name,
                         ("\033[31m" if de_sum > 21 else "\033[32m" if de_sum == 21 else ""),
                         de_sum,
                         ("Bust" if de_sum > 21 else "BlackJack" if de_sum == 21 else "")
                     ) + " " * 15, end="", flush=True)
-            sleep(0.5)
-            print("\033[5;1H\033[2K" + "\n\033[2K" * 3 + "\033[5;1H\033[2K" + "\n\033[2K" * 3
-            , end="")
+            while True:
+                print("\033[19;2HPress ENTER for next game...")
+                key = ord(getch())
+                if key == 13:
+                    break
+            self.round += 1
+            print(f"\033[1;30HRound: {self.round}")
+            usefulThings.printLbyL("\033[3;1H\033[2K" + "\033[5;1H\033[2K" + "\n\033[2K" * 3 + "\033[11;1H\033[2K" + "\033[13;1H\033[2K" + "\n\033[2K" * 3 + "\033[19;1H\033[2K", interval=0.005)
+            sleep(0.2)
+            print("\033[3;2HDealer's hand" + " " * 20)
+            sleep(0.2)
+            print(f"\033[11;2H{name}'s hand" + " " * 20)
+            sleep(0.2)
+            
 
 
 
