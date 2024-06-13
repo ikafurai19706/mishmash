@@ -177,12 +177,12 @@ class BlackJack():
             print("\033[24;1H", end="")
             print(self.dealer_cards)
             print(self.player_cards)
-            button = [">", " ", " "]
+            button = ["\033[33m> \033[1m", " ", " "]
             while True:
-                print(f"\033[19;2H{button[0]} Hit    {button[1]} Stand    {button[2]} Double\n", flush=True)
+                print(f"\033[19;2H{button[0]} Hit\033[0m    {button[1]} Stand\033[0m    {button[2]} Double\033[0m\n", flush=True)
                 key = ord(getch())
                 if key == 13:
-                    if button[0] != " ":
+                    if button[1] == " ":
                         sym, num = self.playerDraw()
                         print(f"\033[13;{4+5*(len(self.player_cards)-1)}H", end="", flush=True)
                         cardPrint(sym, num)
@@ -194,6 +194,11 @@ class BlackJack():
                             pl_sum,
                             ("Bust" if pl_sum > 21 else "BlackJack" if pl_sum == 21 else "")
                         ) + " " * 15, end="", flush=True)
+                        if pl_sum >= 21:
+                            sleep(1)
+                            break
+                        elif button[2] != " ":
+                            break
                     else:
                         break
                 elif key == 224:
@@ -202,6 +207,15 @@ class BlackJack():
                         button[0], button[1], button[2] = button[2], button[0], button[1]
                     elif key == 75 and button[0] == " ":
                         button[0], button[1], button[2] = button[1], button[2], button[0]
+                    continue
+                if pl_sum < 21:
+                    cardPrint(self.dealer_cards[1][0], self.dealer_cards[1][1])
+                    if de_sum < 17:
+                        sleep(0.5)
+                        sym, num = self.dealerDraw()
+                        print(f"\033[5;{4+5*(len(self.player_cards)-1)}H", end="", flush=True)
+                        cardPrint(sym, num)
+                        de_sum = self.cardSum(self.dealer_cards)
 
 
 
