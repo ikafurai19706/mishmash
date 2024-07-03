@@ -14,11 +14,17 @@ post_headers = {
 }
 
 def get_res(url, payload={}):
-    response = requests.request("GET", url, headers=get_headers, data=payload)
+    try:
+        response = requests.request("GET", url, headers=get_headers, data=payload)
+    except requests.exceptions.ConnectionError:
+        response = None
     return response
 
 def post_res(url, payload={}):
-    response = requests.request("POST", url, headers=post_headers, data=payload)
+    try:
+        response = requests.request("POST", url, headers=post_headers, data=payload)
+    except requests.exceptions.ConnectionError:
+        response = None
     return response
 
 def get_info():
