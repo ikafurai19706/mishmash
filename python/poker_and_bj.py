@@ -1,6 +1,7 @@
 #coding: utf-8
 from time import sleep
 import usefulThings
+from random import randint
 
 reset = "\033[2J\033[0;0H"
 symbols = {"spade": "♠", "heart": "\033[31m♥\033[0m", "d": "\033[31m♦\033[0m", "club": "♣"}
@@ -51,8 +52,9 @@ def cardPrint(num: int, sym: str=None):
 │XXX│\033[1B\033[5D\
 └───┘\033[3A""",
         end="")
-    
     else:
+        num = numbers[num]
+        sym = symbols[sym]
         print(f"""\
 ┌───┐\033[1B\033[5D\
 │{num} │\033[1B\033[5D\
@@ -94,6 +96,12 @@ class BlackJack():
         self.money += amount
         print(f"\033[1;1HMoney: {self.money}")
 
+    def draw(self):
+        num = randint(0, 12)
+        sym = randint(0, 3)
+        self.deck[sym][num] += 1
+        return num, sym
+
     def start(self,):
         print(reset)
         self.updateMoney(0)
@@ -114,6 +122,10 @@ class BlackJack():
             print("\033[5;4H", end="")
             cardPrint(-1)
             cardPrint(-1)
+            print("\033[13;4H", end="")
+            cardPrint(self.draw())
+            cardPrint(self.draw())
+            
             
         
 
