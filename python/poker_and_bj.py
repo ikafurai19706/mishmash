@@ -1,10 +1,13 @@
 #coding: utf-8
 from time import sleep
+from random import randint
+from msvcrt import getch
+
 import usefulThings
 from random import randint
 
 reset = "\033[2J\033[0;0H"
-symbols = {"spade": "♠", "heart": "\033[31m♥\033[0m", "d": "\033[31m♦\033[0m", "club": "♣"}
+symbols = ["♠", "\033[31m♥\033[0m", "\033[31m♦\033[0m", "♣"]
 numbers = [" A", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K"]
 title_logo = ["""
 ---------------------------------------
@@ -44,14 +47,15 @@ title_logo = ["""
 -------------------------\
 """]
 
-def cardPrint(num: int, sym: str=None):
-    if num == -1:
+def cardPrint(sym: int, num: int=0):
+    if sym == -1:
         print(f"""\
 ┌───┐\033[1B\033[5D\
 │XXX│\033[1B\033[5D\
 │XXX│\033[1B\033[5D\
 └───┘\033[3A""",
         end="")
+    
     else:
         num = numbers[num]
         sym = symbols[sym]
@@ -60,7 +64,7 @@ def cardPrint(num: int, sym: str=None):
 │{num} │\033[1B\033[5D\
 │ {sym} │\033[1B\033[5D\
 └───┘\033[3A""",
-        end="")
+        end="", flush=True)
     
 def TitleLogoAnimation(gameType):
     print(reset, end="")
@@ -85,16 +89,21 @@ class Poker():
 
 class BlackJack():
     def __init__(self,):
-        self.deck = [ [0] * 13 for i in range(4) ]
+        self.deck = [ (i, j) for i in range(4) for j in range(13) ]
         self.dealer_cards: list[tuple[int, int]] = []
         self.player_cards: list[tuple[int, int]] = []
         self.money = 500
         self.round = 0
         self.start()
 
+    def drawCard(self):
+        sym, num = self.deck.pop(randint(0, len(self.deck)-1))
+        print(f"\033[2;31HDeck: {len(self.deck)}")
+        return sym, num
+
     def updateMoney(self, amount):
         self.money += amount
-        print(f"\033[1;1HMoney: {self.money}")
+        print(f"\033[1;1HMoney: ${self.money}")
 
     def draw(self):
         num = randint(0, 12)
@@ -108,28 +117,60 @@ class BlackJack():
         sleep(0.3)
         self.game()
 
+    def dealerDraw(self):
+        sym, num = self.drawCard()
+        self.dealer_cards.append((sym, num))
+        return sym,num
+    
+    def playerDraw(self):
+        sym, num = self.drawCard()
+        self.player_cards.append((sym, num))
+        return sym, num
+    
+    def cardSum(self, hand):
+        sum = 0
+        exist_ace = False
+        for _, num in hand:
+            if num == 0 and not exist_ace:
+                sum += 11
+                exist_ace = True
+            elif num > 9:
+                sum += 10
+            else:
+                sum += num + 1
+        if exist_ace and sum > 21:
+            sum -= 10
+        return sum
+
     def game(self,):
         self.round += 1
         print(f"\033[1;30HRound: {self.round}")
         sleep(0.3)
-        print("\033[3;2HDealer's hand")
-        print("-" * 40 + "\n" * 5 + "-" * 40 + "\n")
+        print(f"\033[2;31HDeck: {len(self.deck)}")
+        sleep(0.3)
+        usefulThings.printLbyL("\033[3;2HDealer's hand", interval=0.05)
         sleep(0.1)
-        print(f"{name}'s hand")
-        print("-" * 40 + "\n" * 5 + "-" * 40)
-        sleep(0.5)
+        usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40 + "\n", interval=0.01)
+        sleep(0.3)
+        usefulThings.printLbyL(f" {name}'s hand", interval=0.05)
+        sleep(0.1)
+        usefulThings.printLbyL("-" * 40 + "\n" * 5 + "-" * 40, interval=0.01)
+        sleep(0.3)
         while True:
-            print("\033[5;4H", end="")
+            self.dealer_cards.clear()
+            self.player_cards.clear()
+            de_sum = 0
+            pl_sum = 0
+            for i in range(2):
+                sym, num = self.dealerDraw()
+                print(f"\033[5;{4+5*i}H", end="", flush=True)
+                if i == 0: cardPrint(sym, num)
             cardPrint(-1)
             cardPrint(-1)
-            print("\033[13;4H", end="")
-            cardPrint(self.draw())
-            cardPrint(self.draw())
             
-            
-        
 
-        
+
+
 
 ##################################################
 
