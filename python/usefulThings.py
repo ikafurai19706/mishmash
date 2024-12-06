@@ -5,7 +5,7 @@ class DictDN(dict):
         super().__init__(*args, **kwargs) 
         self.__dict__ = self
 
-def printLbyL(string: str, interval: float=0.08, end: str=None):
+def printLbyL(string: str, interval: float=0.08, end: str | None = None):
     for i in string:
         print(i,flush=True, end="")
         sleep(interval)
