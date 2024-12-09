@@ -18,6 +18,7 @@ def main(page: Page):
     def scroll_initialize(e):
         consoleView.scroll_to(offset=-1, duration=0)
 
+    page.title = "Minecraft Server Manager"
     # page.theme = Theme(color_scheme_seed=Colors.GREEN)
     page.theme_mode = ThemeMode.LIGHT
     toggleDarkMode = IconButton(
@@ -33,7 +34,6 @@ def main(page: Page):
         bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
         actions=[
             toggleDarkMode,
-            IconButton(Icons.FILTER_3),
             PopupMenuButton(
                 items=[
                     PopupMenuItem(text="Item 1"),
@@ -47,11 +47,7 @@ def main(page: Page):
     )
 
     def testText(num):
-        text = Text(
-            f"This is Console {num}",
-            font_family="Consolas",
-            selectable=True,
-        )
+        text = f"This is Console {num}"
         return text
 
     consoleView = ListView(
@@ -60,8 +56,32 @@ def main(page: Page):
         controls=[],
     )
 
-    for i in range(0, 100):
-        consoleView.controls.append(testText(i))
+    txt = """\
+itomaki@syscom315-1 MINGW64 ~/Documents/mishmash (main)
+$ flet run python/MCServerManager/flet_test.py -d
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用\
+"""
+
+#    for i in range(0, 100):
+#        txt += testText(i) + "\n"
+    
+    consoleView.controls.append(
+        Text(
+            value=txt,
+            selectable=True,
+            font_family="Consolas",
+            style=TextStyle(
+                height=1.2,
+            )
+        )
+    )
 
     tabMain = Tabs(
         selected_index=0,
@@ -166,6 +186,38 @@ def main(page: Page):
         expand=1,
     )
 
+    headerControls = [
+        Icon(
+            Icons.DOMAIN,
+            color=Colors.ON_SURFACE,
+        ),
+        Text(
+            "Server-Server",
+            size=24,
+            weight=FontWeight.BOLD,
+            color=Colors.ON_SURFACE,
+        ),
+        Row(
+            controls=[
+                IconButton(Icons.PLAY_ARROW),
+                IconButton(Icons.STOP)
+            ],
+            expand=True,
+            alignment=MainAxisAlignment.END,
+        )
+    ]
+
+    header = Container(
+        Row(
+            headerControls,
+            vertical_alignment=CrossAxisAlignment.CENTER,
+            expand=True,
+        ),
+        border=border.only(bottom=border.BorderSide(2, Colors.INVERSE_SURFACE)),
+        padding=padding.symmetric(5, 10),
+    )
+
+    page.add(header)
     page.add(tabMain)
     scroll_initialize(None)
 
