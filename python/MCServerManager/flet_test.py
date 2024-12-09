@@ -15,22 +15,25 @@ def main(page: Page):
         toggleDarkMode.selected = not toggleDarkMode.selected
         page.update()
 
-    # page.theme = Theme(color_scheme_seed=colors.GREEN)
+    def scroll_initialize(e):
+        consoleView.scroll_to(offset=-1, duration=0)
+
+    # page.theme = Theme(color_scheme_seed=Colors.GREEN)
     page.theme_mode = ThemeMode.LIGHT
     toggleDarkMode = IconButton(
         on_click=change_theme,
-        icon=icons.DARK_MODE,
-        selected_icon=icons.LIGHT_MODE,
+        icon=Icons.DARK_MODE,
+        selected_icon=Icons.LIGHT_MODE,
     )
 
     page.appbar = AppBar(
-        leading=Icon(icons.RADIO_BUTTON_CHECKED),
+        leading=Icon(Icons.RADIO_BUTTON_CHECKED),
         title=Text("MC Server Manager"),
         center_title=False,
-        bgcolor=colors.SURFACE_VARIANT,
+        bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
         actions=[
             toggleDarkMode,
-            IconButton(icons.FILTER_3),
+            IconButton(Icons.FILTER_3),
             PopupMenuButton(
                 items=[
                     PopupMenuItem(text="Item 1"),
@@ -43,25 +46,31 @@ def main(page: Page):
         ],
     )
 
-    consoleArea = ListView(
+    def testText(num):
+        text = Text(
+            f"This is Console {num}",
+            font_family="Consolas",
+            selectable=True,
+        )
+        return text
+
+    consoleView = ListView(
         expand=True,
-        auto_scroll=True,
+        spacing=0,
+        controls=[],
     )
 
     for i in range(0, 100):
-        consoleArea.controls.append(Text(
-            f"This is Console {i}",
-            font_family="Consolas",
-            selectable=True,
-        ))
+        consoleView.controls.append(testText(i))
 
     tabMain = Tabs(
         selected_index=0,
         animation_duration=300,
+        on_change=scroll_initialize,
         tabs=[
             Tab(
                 text="DashBoard",
-                icon=icons.SPACE_DASHBOARD,
+                icon=Icons.SPACE_DASHBOARD,
                 content=Column(
                     alignment=MainAxisAlignment.SPACE_AROUND,
                     controls=[
@@ -76,7 +85,7 @@ def main(page: Page):
                                         Container(
                                             Text("Section A1", size=24),
                                             alignment=alignment.center,
-                                            bgcolor=colors.PRIMARY_CONTAINER,
+                                            bgcolor=Colors.PRIMARY_CONTAINER,
                                             expand=True,
                                             margin=10,
                                             key="A1",
@@ -84,7 +93,7 @@ def main(page: Page):
                                         Container(
                                             Text("Section A2", size=24),
                                             alignment=alignment.center,
-                                            bgcolor=colors.PRIMARY_CONTAINER,
+                                            bgcolor=Colors.PRIMARY_CONTAINER,
                                             expand=True,
                                             margin=10,
                                             key="A2",
@@ -94,7 +103,7 @@ def main(page: Page):
                                 Container(
                                     Text("Section B", size=24),
                                     alignment=alignment.center,
-                                    bgcolor=colors.SECONDARY_CONTAINER,
+                                    bgcolor=Colors.SECONDARY_CONTAINER,
                                     expand=2,
                                     margin=10,
                                     key="B",
@@ -102,7 +111,7 @@ def main(page: Page):
                                 Container(
                                     Text("Section C", size=24),
                                     alignment=alignment.center,
-                                    bgcolor=colors.TERTIARY_CONTAINER,
+                                    bgcolor=Colors.TERTIARY_CONTAINER,
                                     expand=1,
                                     margin=10,
                                     key="C",
@@ -112,7 +121,7 @@ def main(page: Page):
                         Container(
                             Text("Section D", size=24),
                             alignment=alignment.center,
-                            bgcolor=colors.TERTIARY_CONTAINER,
+                            bgcolor=Colors.TERTIARY_CONTAINER,
                             expand=True,
                             margin=10,
                             key="D",
@@ -122,29 +131,24 @@ def main(page: Page):
             ),
             Tab(
                 text="Console",
-                icon=icons.WYSIWYG,
+                icon=Icons.WYSIWYG,
                 content=Column(
                     alignment=MainAxisAlignment.SPACE_AROUND,
                     controls=[
                         Container(
-                            Container(
-                                consoleArea,
-                                alignment=alignment.top_left,
-                                margin=margin.symmetric(0, 5),
-                                expand=True,
-                                bgcolor=colors.ERROR_CONTAINER
-                            ),
+                            consoleView,
                             alignment=alignment.center,
-                            border=border.all(1, colors.OUTLINE),
+                            border=border.all(1, Colors.OUTLINE),
                             border_radius=border_radius.all(5),
                             expand=True,
                             margin=margin.symmetric(10, 0),
+                            padding=padding.symmetric(0, 5),
                         ),
                         Container(
                             content=TextField(
                                 label="Enter the command",
-                                border_color=colors.OUTLINE,
-                                focused_border_color=colors.PRIMARY,
+                                border_color=Colors.OUTLINE,
+                                focused_border_color=Colors.PRIMARY,
                             )
                         )
                     ]
@@ -152,7 +156,7 @@ def main(page: Page):
             ),
             Tab(
                 text="Settings",
-                icon=icons.SETTINGS,
+                icon=Icons.SETTINGS,
                 content=Container(
                     alignment=alignment.center,
                     content=Text("This is Tab 3"),
@@ -163,5 +167,6 @@ def main(page: Page):
     )
 
     page.add(tabMain)
+    scroll_initialize(None)
 
 app(main)
