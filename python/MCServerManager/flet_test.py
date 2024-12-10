@@ -46,17 +46,27 @@ def main(page: Page):
         ],
     )
 
-    def testText(num):
-        text = f"This is Console {num}"
-        return text
-
-    consoleView = ListView(
-        expand=True,
-        spacing=0,
-        controls=[],
-    )
-
     txt = """\
+itomaki@syscom315-1 MINGW64 ~/Documents/mishmash (main)
+$ flet run python/MCServerManager/flet_test.py -d
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+itomaki@syscom315-1 MINGW64 ~/Documents/mishmash (main)
+$ flet run python/MCServerManager/flet_test.py -d
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
+  bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
 itomaki@syscom315-1 MINGW64 ~/Documents/mishmash (main)
 $ flet run python/MCServerManager/flet_test.py -d
 C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:34: DeprecationWarning: colors enum is deprecated since version 0.25.0 and will be removed in version 0.28.0. Use Colors enum instead.
@@ -69,18 +79,63 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
   bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用\
 """
 
-#    for i in range(0, 100):
-#        txt += testText(i) + "\n"
-    
-    consoleView.controls.append(
-        Text(
-            value=txt,
-            selectable=True,
-            font_family="Consolas",
-            style=TextStyle(
-                height=1.2,
-            )
+    print(txt)
+
+    text_t = Text(
+        value=txt,
+        selectable=True,
+        font_family="Consolas",
+        no_wrap=True,
+        color=Colors.ON_SURFACE_VARIANT,
+        style=TextStyle(
+            height=1.2,
         )
+    )
+
+    consoleView = Column(
+        spacing=0,
+        controls=[text_t],
+        scroll=ScrollMode.ALWAYS
+    )
+
+    headerControls = [
+        Icon(
+            Icons.DOMAIN,
+            color=Colors.PRIMARY,
+        ),
+        Text(
+            "Server-Server",
+            size=24,
+            weight=FontWeight.BOLD,
+            color=Colors.PRIMARY,
+        ),
+        Row(
+            controls=[
+                FilledButton(
+                    text="START  ",
+                    icon=Icons.PLAY_ARROW,
+                    style=ButtonStyle(
+                        padding=padding.symmetric(0, 5),
+                        # shape=RoundedRectangleBorder(5),
+                    )
+                ),
+            ],
+            expand=True,
+            alignment=MainAxisAlignment.END,
+        )
+    ]
+
+    header = Container(
+        Column([
+            Row(
+                headerControls,
+                vertical_alignment=CrossAxisAlignment.CENTER,
+                expand=True,
+            ),
+            Text("This is a motd of a motd that is motd by a motd")
+        ]),
+        #border=border.only(bottom=border.BorderSide(1, Colors.OUTLINE_VARIANT)),
+        padding=padding.only(10, 5, 10, 15),
     )
 
     tabMain = Tabs(
@@ -91,63 +146,64 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
             Tab(
                 text="DashBoard",
                 icon=Icons.SPACE_DASHBOARD,
-                content=Column(
-                    alignment=MainAxisAlignment.SPACE_AROUND,
-                    controls=[
-                        Row(
-                            alignment=MainAxisAlignment.SPACE_AROUND,
-                            expand=True,
-                            controls=[
-                                Column(
-                                    alignment=MainAxisAlignment.SPACE_AROUND,
-                                    expand=3,
-                                    controls=[
-                                        Container(
-                                            Text("Section A1", size=24),
-                                            alignment=alignment.center,
-                                            bgcolor=Colors.PRIMARY_CONTAINER,
-                                            expand=True,
-                                            margin=10,
-                                            key="A1",
-                                        ),
-                                        Container(
-                                            Text("Section A2", size=24),
-                                            alignment=alignment.center,
-                                            bgcolor=Colors.PRIMARY_CONTAINER,
-                                            expand=True,
-                                            margin=10,
-                                            key="A2",
-                                        ),
-                                    ]
-                                ),
-                                Container(
-                                    Text("Section B", size=24),
-                                    alignment=alignment.center,
-                                    bgcolor=Colors.SECONDARY_CONTAINER,
-                                    expand=2,
-                                    margin=10,
-                                    key="B",
-                                ),
-                                Container(
-                                    Text("Section C", size=24),
-                                    alignment=alignment.center,
-                                    bgcolor=Colors.TERTIARY_CONTAINER,
-                                    expand=1,
-                                    margin=10,
-                                    key="C",
-                                ),
-                            ]
-                        ),
-                        Container(
-                            Text("Section D", size=24),
-                            alignment=alignment.center,
-                            bgcolor=Colors.TERTIARY_CONTAINER,
-                            expand=True,
-                            margin=10,
-                            key="D",
-                        ),
-                    ]
-                )
+                content=
+                    Column(
+                        alignment=MainAxisAlignment.SPACE_AROUND,
+                        controls=[
+                            Row(
+                                alignment=MainAxisAlignment.SPACE_AROUND,
+                                expand=True,
+                                controls=[
+                                    Column(
+                                        alignment=MainAxisAlignment.SPACE_AROUND,
+                                        expand=3,
+                                        controls=[
+                                            Container(
+                                                Text("Section A1", size=24),
+                                                alignment=alignment.center,
+                                                bgcolor=Colors.PRIMARY_CONTAINER,
+                                                expand=True,
+                                                margin=10,
+                                                key="A1",
+                                            ),
+                                            Container(
+                                                Text("Section A2", size=24),
+                                                alignment=alignment.center,
+                                                bgcolor=Colors.PRIMARY_CONTAINER,
+                                                expand=True,
+                                                margin=10,
+                                                key="A2",
+                                            ),
+                                        ]
+                                    ),
+                                    Container(
+                                        Text("Section B", size=24),
+                                        alignment=alignment.center,
+                                        bgcolor=Colors.SECONDARY_CONTAINER,
+                                        expand=2,
+                                        margin=10,
+                                        key="B",
+                                    ),
+                                    Container(
+                                        Text("Section C", size=24),
+                                        alignment=alignment.center,
+                                        bgcolor=Colors.TERTIARY_CONTAINER,
+                                        expand=1,
+                                        margin=10,
+                                        key="C",
+                                    ),
+                                ]
+                            ),
+                            Container(
+                                Text("Section D", size=24),
+                                alignment=alignment.center,
+                                bgcolor=Colors.TERTIARY_CONTAINER,
+                                expand=True,
+                                margin=10,
+                                key="D",
+                            ),
+                        ]
+                    )
             ),
             Tab(
                 text="Console",
@@ -156,7 +212,12 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
                     alignment=MainAxisAlignment.SPACE_AROUND,
                     controls=[
                         Container(
-                            consoleView,
+                            ListView(
+                                controls=[consoleView],
+                                spacing=0,
+                                horizontal=True,
+                                width=consoleView.width,
+                            ),
                             alignment=alignment.center,
                             border=border.all(1, Colors.OUTLINE),
                             border_radius=border_radius.all(5),
@@ -184,37 +245,6 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
             ),
         ],
         expand=1,
-    )
-
-    headerControls = [
-        Icon(
-            Icons.DOMAIN,
-            color=Colors.ON_SURFACE,
-        ),
-        Text(
-            "Server-Server",
-            size=24,
-            weight=FontWeight.BOLD,
-            color=Colors.ON_SURFACE,
-        ),
-        Row(
-            controls=[
-                IconButton(Icons.PLAY_ARROW),
-                IconButton(Icons.STOP)
-            ],
-            expand=True,
-            alignment=MainAxisAlignment.END,
-        )
-    ]
-
-    header = Container(
-        Row(
-            headerControls,
-            vertical_alignment=CrossAxisAlignment.CENTER,
-            expand=True,
-        ),
-        border=border.only(bottom=border.BorderSide(2, Colors.INVERSE_SURFACE)),
-        padding=padding.symmetric(5, 10),
     )
 
     page.add(header)
