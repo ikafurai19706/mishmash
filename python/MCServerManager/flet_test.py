@@ -1,15 +1,15 @@
 # encoding: utf-8
-from flet import *
-import time
+import flet as ft
+import asyncio  # 次の機能で使う
 
-def main(page: Page):
+def main(page: ft.Page):
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
         page.update()
 
     def change_theme(e):
         # page.splash.visible = True
-        page.theme_mode = ThemeMode.LIGHT if page.theme_mode == ThemeMode.DARK else ThemeMode.DARK
+        page.theme_mode = ft.ThemeMode.LIGHT if page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
         page.update()
         # time.sleep(0.3)
         toggleDarkMode.selected = not toggleDarkMode.selected
@@ -18,27 +18,34 @@ def main(page: Page):
     def scroll_initialize(e):
         consoleView.scroll_to(offset=-1, duration=0)
 
+    def server_buttons_toggle(e):
+        if serverButtonsRow.controls == buttonsIdling:
+            serverButtonsRow.controls = buttonsRunning
+        else:
+            serverButtonsRow.controls = buttonsIdling
+        page.update()
+
     page.title = "Minecraft Server Manager"
     # page.theme = Theme(color_scheme_seed=Colors.GREEN)
-    page.theme_mode = ThemeMode.LIGHT
-    toggleDarkMode = IconButton(
+    page.theme_mode = ft.ThemeMode.LIGHT
+    toggleDarkMode = ft.IconButton(
         on_click=change_theme,
-        icon=Icons.DARK_MODE,
-        selected_icon=Icons.LIGHT_MODE,
+        icon=ft.Icons.DARK_MODE,
+        selected_icon=ft.Icons.LIGHT_MODE,
     )
 
-    page.appbar = AppBar(
-        leading=Icon(Icons.RADIO_BUTTON_CHECKED),
-        title=Text("MC Server Manager"),
+    page.appbar = ft.AppBar(
+        leading=ft.Icon(ft.Icons.RADIO_BUTTON_CHECKED),
+        title=ft.Text("MC Server Manager"),
         center_title=False,
-        bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
+        bgcolor=ft.colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用
         actions=[
             toggleDarkMode,
-            PopupMenuButton(
+            ft.PopupMenuButton(
                 items=[
-                    PopupMenuItem(text="Item 1"),
-                    PopupMenuItem(),  # divider
-                    PopupMenuItem(
+                    ft.PopupMenuItem(text="Item 1"),
+                    ft.PopupMenuItem(),  # divider
+                    ft.PopupMenuItem(
                         text="Checked item", checked=False, on_click=check_item_clicked
                     ),
                 ]
@@ -81,166 +88,192 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
 
     print(txt)
 
-    text_t = Text(
+    text_t = ft.Text(
         value=txt,
         selectable=True,
         font_family="Consolas",
         no_wrap=True,
-        color=Colors.ON_SURFACE_VARIANT,
-        style=TextStyle(
+        color=ft.Colors.ON_SURFACE_VARIANT,
+        style=ft.TextStyle(
             height=1.2,
         )
     )
 
-    consoleView = Column(
+    consoleView = ft.Column(
         spacing=0,
         controls=[text_t],
-        scroll=ScrollMode.ALWAYS
+        scroll=ft.ScrollMode.ALWAYS
+    )
+
+    startButton = ft.FilledButton(
+        text="START  ",
+        icon=ft.Icons.PLAY_ARROW,
+        on_click=server_buttons_toggle,
+        style=ft.ButtonStyle(
+            padding=ft.padding.symmetric(0, 5),
+            # shape=RoundedRectangleBorder(5),
+        )
+    )
+
+    stopButton = ft.FilledButton(
+        text="STOP  ",
+        icon=ft.Icons.STOP,
+        style=ft.ButtonStyle(
+            padding=ft.padding.symmetric(0, 5),
+            # shape=RoundedRectangleBorder(5),
+        )
+    )
+
+    killButton = ft.FilledButton(
+        text="KILL  ",
+        icon=ft.Icons.CANCEL_OUTLINED,
+        style=ft.ButtonStyle(
+            padding=ft.padding.symmetric(0, 5),
+            # shape=RoundedRectangleBorder(5),
+        )
+    )
+
+    buttonsIdling = [startButton]
+
+    buttonsRunning = [killButton, stopButton]
+
+    serverButtonsRow = ft.Row(
+        controls=buttonsIdling,
+        expand=True,
+        alignment=ft.MainAxisAlignment.END,
     )
 
     headerControls = [
-        Icon(
-            Icons.DOMAIN,
-            color=Colors.PRIMARY,
+        ft.Icon(
+            ft.Icons.DOMAIN,
+            color=ft.Colors.PRIMARY,
         ),
-        Text(
+        ft.Text(
             "Server-Server",
             size=24,
-            weight=FontWeight.BOLD,
-            color=Colors.PRIMARY,
+            weight=ft.FontWeight.BOLD,
+            color=ft.Colors.PRIMARY,
         ),
-        Row(
-            controls=[
-                FilledButton(
-                    text="START  ",
-                    icon=Icons.PLAY_ARROW,
-                    style=ButtonStyle(
-                        padding=padding.symmetric(0, 5),
-                        # shape=RoundedRectangleBorder(5),
-                    )
-                ),
-            ],
-            expand=True,
-            alignment=MainAxisAlignment.END,
-        )
+        serverButtonsRow,
     ]
 
-    header = Container(
-        Column([
-            Row(
+    header = ft.Container(
+        ft.Column([
+            ft.Row(
                 headerControls,
-                vertical_alignment=CrossAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,
             ),
-            Text("This is a motd of a motd that is motd by a motd")
+            ft.Text("This is a motd of a motd that is motd by a motd")
         ]),
         #border=border.only(bottom=border.BorderSide(1, Colors.OUTLINE_VARIANT)),
-        padding=padding.only(10, 5, 10, 15),
+        padding=ft.padding.only(10, 5, 10, 15),
     )
 
-    tabMain = Tabs(
+    tabMain = ft.Tabs(
         selected_index=0,
         animation_duration=300,
         on_change=scroll_initialize,
+        scrollable=False,
+        
         tabs=[
-            Tab(
+            ft.Tab(
                 text="DashBoard",
-                icon=Icons.SPACE_DASHBOARD,
-                content=
-                    Column(
-                        alignment=MainAxisAlignment.SPACE_AROUND,
-                        controls=[
-                            Row(
-                                alignment=MainAxisAlignment.SPACE_AROUND,
-                                expand=True,
-                                controls=[
-                                    Column(
-                                        alignment=MainAxisAlignment.SPACE_AROUND,
-                                        expand=3,
-                                        controls=[
-                                            Container(
-                                                Text("Section A1", size=24),
-                                                alignment=alignment.center,
-                                                bgcolor=Colors.PRIMARY_CONTAINER,
-                                                expand=True,
-                                                margin=10,
-                                                key="A1",
-                                            ),
-                                            Container(
-                                                Text("Section A2", size=24),
-                                                alignment=alignment.center,
-                                                bgcolor=Colors.PRIMARY_CONTAINER,
-                                                expand=True,
-                                                margin=10,
-                                                key="A2",
-                                            ),
-                                        ]
-                                    ),
-                                    Container(
-                                        Text("Section B", size=24),
-                                        alignment=alignment.center,
-                                        bgcolor=Colors.SECONDARY_CONTAINER,
-                                        expand=2,
-                                        margin=10,
-                                        key="B",
-                                    ),
-                                    Container(
-                                        Text("Section C", size=24),
-                                        alignment=alignment.center,
-                                        bgcolor=Colors.TERTIARY_CONTAINER,
-                                        expand=1,
-                                        margin=10,
-                                        key="C",
-                                    ),
-                                ]
-                            ),
-                            Container(
-                                Text("Section D", size=24),
-                                alignment=alignment.center,
-                                bgcolor=Colors.TERTIARY_CONTAINER,
-                                expand=True,
-                                margin=10,
-                                key="D",
-                            ),
-                        ]
-                    )
-            ),
-            Tab(
-                text="Console",
-                icon=Icons.WYSIWYG,
-                content=Column(
-                    alignment=MainAxisAlignment.SPACE_AROUND,
+                icon=ft.Icons.SPACE_DASHBOARD,
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
                     controls=[
-                        Container(
-                            ListView(
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                            expand=True,
+                            controls=[
+                                ft.Column(
+                                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                                    expand=3,
+                                    controls=[
+                                        ft.Container(
+                                            ft.Text("Section A1", size=24),
+                                            alignment=ft.alignment.center,
+                                            bgcolor=ft.Colors.PRIMARY_CONTAINER,
+                                            expand=True,
+                                            margin=10,
+                                            key="A1",
+                                        ),
+                                        ft.Container(
+                                            ft.Text("Section A2", size=24),
+                                            alignment=ft.alignment.center,
+                                            bgcolor=ft.Colors.PRIMARY_CONTAINER,
+                                            expand=True,
+                                            margin=10,
+                                            key="A2",
+                                        ),
+                                    ]
+                                ),
+                                ft.Container(
+                                    ft.Text("Section B", size=24),
+                                    alignment=ft.alignment.center,
+                                    bgcolor=ft.Colors.SECONDARY_CONTAINER,
+                                    expand=2,
+                                    margin=10,
+                                    key="B",
+                                ),
+                                ft.Container(
+                                    ft.Text("Section C", size=24),
+                                    alignment=ft.alignment.center,
+                                    bgcolor=ft.Colors.TERTIARY_CONTAINER,
+                                    expand=1,
+                                    margin=10,
+                                    key="C",
+                                ),
+                            ]
+                        ),
+                        ft.Container(
+                            ft.Text("Section D", size=24),
+                            alignment=ft.alignment.center,
+                            bgcolor=ft.Colors.TERTIARY_CONTAINER,
+                            expand=True,
+                            margin=10,
+                            key="D",
+                        ),
+                    ]
+                )
+            ),
+            ft.Tab(
+                text="Console",
+                icon=ft.Icons.WYSIWYG,
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    controls=[
+                        ft.Container(
+                            ft.ListView(
                                 controls=[consoleView],
                                 spacing=0,
                                 horizontal=True,
                                 width=consoleView.width,
                             ),
-                            alignment=alignment.center,
-                            border=border.all(1, Colors.OUTLINE),
-                            border_radius=border_radius.all(5),
+                            alignment=ft.alignment.center,
+                            border=ft.border.all(1, ft.Colors.OUTLINE),
+                            border_radius=ft.border_radius.all(5),
                             expand=True,
-                            margin=margin.symmetric(10, 0),
-                            padding=padding.symmetric(0, 5),
+                            margin=ft.margin.symmetric(10, 0),
+                            padding=ft.padding.symmetric(0, 5),
                         ),
-                        Container(
-                            content=TextField(
+                        ft.Container(
+                            content=ft.TextField(
                                 label="Enter the command",
-                                border_color=Colors.OUTLINE,
-                                focused_border_color=Colors.PRIMARY,
+                                border_color=ft.Colors.OUTLINE,
+                                focused_border_color=ft.Colors.PRIMARY,
                             )
                         )
                     ]
                 ),
             ),
-            Tab(
+            ft.Tab(
                 text="Settings",
-                icon=Icons.SETTINGS,
-                content=Container(
-                    alignment=alignment.center,
-                    content=Text("This is Tab 3"),
+                icon=ft.Icons.SETTINGS,
+                content=ft.Container(
+                    alignment=ft.alignment.center,
+                    content=ft.Text("This is Tab 3"),
                 ),
             ),
         ],
@@ -251,4 +284,4 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
     page.add(tabMain)
     scroll_initialize(None)
 
-app(main)
+ft.app(main)
