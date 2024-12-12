@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 import subprocess 
 import os
-from time import sleep
+from asyncio import sleep
 
 import req
 
@@ -17,10 +17,19 @@ tree = app_commands.CommandTree(client)
 async def on_ready():
   print('Startup successful.') 
   # アクティビティを設定 
-  new_activity = f"During the experiment" 
+  new_activity = f"Server isn't running" 
   await client.change_presence(activity=discord.Game(new_activity)) 
   # スラッシュコマンドを同期 
   await tree.sync(guild=discord.Object(id=GUILD_ID))
+  while True:
+    info = req.get_info()
+    if info is None:
+      new_activity = f"Server isn't running" 
+    else:
+      new_activity = f"Server is running!"
+    await client.change_presence(activity=discord.Game(new_activity))
+    await sleep(30)
+
 
 @tree.command(name='palinfo', description='サーバーの状態を取得します。', guild=discord.Object(id=GUILD_ID))
 async def info_cmd(interaction: discord.Interaction): 
@@ -33,11 +42,13 @@ async def info_cmd(interaction: discord.Interaction):
     embed = discord.Embed(title=info['servername'], description=desc, colour=0x55EE44)
     await interaction.followup.send(embed=embed)
   else:
-    await interaction.followup.send("**:x: Connection timed out.**")
+    await interaction.followup.send("**:x: Connection timed out. The server is probably closed.**")
 
-@tree.command(name='shutdown', description='サーバーをシャットダウンします。デフォルトでは30秒後に実行されます。', guild=discord.Object(id=GUILD_ID))
+@tree.command(name='shutdown', description='サーバーをシャットダウンします。デフォルトでは30秒後に実行されます。1秒~300秒の間で指定してください。', guild=discord.Object(id=GUILD_ID))
 async def shutdown_cmd(interaction: discord.Interaction, waittime:int=30):
   await interaction.response.defer()
+  if not 0 < waittime < 301:
+    await interaction.followup.send("**:red_circle: Please specify a wait time between 1 and 300 seconds.**")
   if req.post_shutdown(waitTime=waittime) is not None:
     await interaction.followup.send("**:green_circle: Shutdown request received.**")
   else:
@@ -62,7 +73,7 @@ async def reboot_cmd(interaction: discord.Interaction, waittime:int=30):
   await interaction.response.defer()
   await interaction.followup.send("**Initiating reboot...**")
   if req.post_shutdown(waitTime=waittime) is not None:
-    sleep(waittime+30)
+    await sleep(waittime+30)
   subprocess.Popen("F:\\server\\pal\\steam\\community.bat", shell=True)
   await interaction.followup.send("**:green_circle: Startup request received.**")
 
