@@ -11,7 +11,6 @@ def main(page: ft.Page):
         # page.splash.visible = True
         page.theme_mode = ft.ThemeMode.LIGHT if page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
         page.update()
-        # time.sleep(0.3)
         toggleDarkMode.selected = not toggleDarkMode.selected
         page.update()
 
@@ -86,8 +85,6 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
   bgcolor=colors.SURFACE_VARIANT,     # Colorsで未実装のため非推奨のcolorsを使用\
 """
 
-    print(txt)
-
     text_t = ft.Text(
         value=txt,
         selectable=True,
@@ -106,7 +103,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
     )
 
     startButton = ft.FilledButton(
-        text="START  ",
+        text="起動  ",
         icon=ft.Icons.PLAY_ARROW,
         on_click=server_buttons_toggle,
         style=ft.ButtonStyle(
@@ -116,7 +113,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
     )
 
     stopButton = ft.FilledButton(
-        text="STOP  ",
+        text="停止  ",
         icon=ft.Icons.STOP,
         style=ft.ButtonStyle(
             padding=ft.padding.symmetric(0, 5),
@@ -125,7 +122,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
     )
 
     killButton = ft.FilledButton(
-        text="KILL  ",
+        text="強制終了  ",
         icon=ft.Icons.CANCEL_OUTLINED,
         style=ft.ButtonStyle(
             padding=ft.padding.symmetric(0, 5),
@@ -169,16 +166,62 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
         #border=border.only(bottom=border.BorderSide(1, Colors.OUTLINE_VARIANT)),
         padding=ft.padding.only(10, 5, 10, 15),
     )
+    
+    tStyle_h1 = ft.TextStyle(
+        size=28,
+    )
 
-    tabMain = ft.Tabs(
+    tStyle_h2 = ft.TextStyle(
+        size=24,
+    )
+
+    tStyle_h3 = ft.TextStyle(
+        size=20,
+    )
+
+    tStyle_caption = ft.TextStyle(
+        size=12,
+        color=ft.Colors.OUTLINE,
+    )
+
+    settingsGamePlay = ft.Column(
+        [
+            ft.Checkbox("動物のスポーン"),
+            ft.Checkbox("モンスターのスポーン"),
+            ft.Checkbox("NPCのスポーン"),
+            ft.Checkbox("ハードコア"),
+            ft.Checkbox("ネザー"),
+            ft.Checkbox("PVP"),
+            ft.Checkbox("飛行"),
+            ft.Checkbox("ゲームモードの強制"),
+        ],
+        spacing=0,
+    )
+
+    def text_with_cap(mainText: str, capText: str, spacing=0, mainWeight=ft.FontWeight.BOLD, capWeight=ft.FontWeight.NORMAL, mainStyle=tStyle_h2, capStyle=tStyle_caption):
+        result = ft.Column(
+            controls=[
+                ft.Text(mainText, weight=mainWeight, style=mainStyle),
+                ft.Text(capText, weight=capWeight, style=capStyle),
+            ],
+            spacing=spacing,
+        )
+        return result
+
+    settingsList = [
+        text_with_cap("サーバー設定", "server.propertiesの編集ができます。"),
+        ft.Text("ゲームプレイ", weight=ft.FontWeight.BOLD, style=tStyle_h3),
+        ft.Container(settingsGamePlay, margin=ft.margin.only(10))
+    ]
+
+    tabsMain = ft.Tabs(
         selected_index=0,
-        animation_duration=300,
+        animation_duration=0,
         on_change=scroll_initialize,
         scrollable=False,
-        
         tabs=[
             ft.Tab(
-                text="DashBoard",
+                text="ダッシュボード",
                 icon=ft.Icons.SPACE_DASHBOARD,
                 content=ft.Column(
                     alignment=ft.MainAxisAlignment.SPACE_AROUND,
@@ -239,7 +282,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
                 )
             ),
             ft.Tab(
-                text="Console",
+                text="コンソール",
                 icon=ft.Icons.WYSIWYG,
                 content=ft.Column(
                     alignment=ft.MainAxisAlignment.SPACE_AROUND,
@@ -260,7 +303,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
                         ),
                         ft.Container(
                             content=ft.TextField(
-                                label="Enter the command",
+                                label="コマンドを入力",
                                 border_color=ft.Colors.OUTLINE,
                                 focused_border_color=ft.Colors.PRIMARY,
                             )
@@ -269,11 +312,15 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
                 ),
             ),
             ft.Tab(
-                text="Settings",
+                text="設定",
                 icon=ft.Icons.SETTINGS,
                 content=ft.Container(
-                    alignment=ft.alignment.center,
-                    content=ft.Text("This is Tab 3"),
+                    alignment=ft.alignment.top_left,
+                    margin=ft.margin.symmetric(10, 15),
+                    content=ft.Column(
+                        settingsList,
+                        scroll=ft.ScrollMode.AUTO,
+                    ),
                 ),
             ),
         ],
@@ -281,7 +328,7 @@ C:\\Users\\itomaki\\Documents\\mishmash\\python\\MCServerManager\\flet_test.py:3
     )
 
     page.add(header)
-    page.add(tabMain)
+    page.add(tabsMain)
     scroll_initialize(None)
 
 ft.app(main)
